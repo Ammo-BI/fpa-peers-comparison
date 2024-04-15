@@ -1,0 +1,6 @@
+-e .
+
+beautifulsoup4==4.12.3
+pandas==2.2.1
+requests==2.31.0
+numpy==1.26.4

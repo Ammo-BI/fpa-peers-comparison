@@ -1,0 +1,10 @@
+setup.py
+src/peers_comparison/__init__.py
+src/peers_comparison/cvm_data_retriever.py
+src/peers_comparison/peers_analysis.py
+src/peers_comparison/sheets_data.py
+src/peers_comparison.egg-info/PKG-INFO
+src/peers_comparison.egg-info/SOURCES.txt
+src/peers_comparison.egg-info/dependency_links.txt
+src/peers_comparison.egg-info/requires.txt
+src/peers_comparison.egg-info/top_level.txt
