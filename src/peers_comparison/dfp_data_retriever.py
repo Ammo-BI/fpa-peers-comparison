@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 import peers_comparison.config as config
 from peers_comparison.cvm_data_retriever import CVMDataRetriever
@@ -15,29 +16,42 @@ class DFPDataRetriever(CVMDataRetriever):
             companies_cvm_codes=companies_cvm_codes, first_year=first_year, last_year=last_year, type_docs=type_docs
         )
 
-    def pivot_and_clean(self):
-        cvm_df = self.dfp_original_data.copy()
+    def create_report(self):
+        dfp_df = self.dfp_original_data.copy()
 
-        cvm_df = cvm_df[(cvm_df["VL_CONTA"] < 0) | (cvm_df["VL_CONTA"] > 1)]
+        dfp_df = dfp_df[(dfp_df["VL_CONTA"] < 0) | (dfp_df["VL_CONTA"] > 1)]
 
-        cvm_df = cvm_df[(cvm_df["GRUPO_DFP"].isin(config.GROUPS)) & (cvm_df["CD_CONTA"].isin(config.ACCOUNTS))][
+        dfp_df["VL_CONTA"] = dfp_df[["ESCALA_MOEDA", "VL_CONTA"]].apply(lambda x: self.update_vl_conta(x), axis=1)
+
+        dfp_df = dfp_df[(dfp_df["GRUPO_DFP"].isin(config.GROUPS)) & (dfp_df["CD_CONTA"].isin(config.ACCOUNTS))][
             config.DFP_COLUMNS
         ]
 
-        cvm_df["remove"] = np.where(
-            cvm_df["CD_CONTA"].isin(config.INCOMPATIBLE_ACCOUNTS["accounts"]),
-            np.where(cvm_df["DS_CONTA"].str.lower().str.contains(config.INCOMPATIBLE_ACCOUNTS["ds_account"]), 0, 1),
+        dfp_df["remove"] = np.where(
+            dfp_df["CD_CONTA"].isin(config.INCOMPATIBLE_ACCOUNTS["accounts"]),
+            np.where(dfp_df["DS_CONTA"].str.lower().str.contains(config.INCOMPATIBLE_ACCOUNTS["ds_account"]), 0, 1),
             0,
         )
 
-        cvm_df = (
-            cvm_df[cvm_df["remove"] == 0][["DT_FIM_EXERC", "DENOM_CIA", "VL_CONTA", "CD_CONTA"]]
-            .replace({"CD_CONTA": config.CD_CONTA_MAP_DICT})
-            .replace({"DENOM_CIA": config.UPDATE_COMPANY_NAME})
+        dfp_df = dfp_df[dfp_df["remove"] == 0][
+            ["DT_FIM_EXERC", "CD_CVM", "CNPJ_CIA", "DENOM_CIA", "CD_CONTA", "CD_CONTA", "VL_CONTA"]
+        ]
+        dfp_df.columns = ["DT_FIM_EXERC", "CD_CVM", "CNPJ_CIA", "DENOM_CIA", "CD_CONTA", "DESC_CONTA", "VL_CONTA"]
+
+        dfp_df["DT_FIM_EXERC"] = pd.to_datetime(dfp_df["DT_FIM_EXERC"])
+
+        self.dfp_report = dfp_df.replace({"DESC_CONTA": config.CD_CONTA_MAP_DICT}).replace(
+            {"DENOM_CIA": config.UPDATE_COMPANY_NAME}
         )
 
+    def pivot_report(self):
         self.df_pivot = (
-            cvm_df.pivot(index=["DT_FIM_EXERC", "DENOM_CIA"], columns="CD_CONTA", values="VL_CONTA")
+            self.dfp_report.pivot(index=["DT_FIM_EXERC", "DENOM_CIA"], columns="CD_CONTA", values="VL_CONTA")
             .reset_index()
             .fillna(0)
         )
+
+    def update_vl_conta(self, row):
+        unit_value = 1000 if row["ESCALA_MOEDA"] == "MIL" else 1
+
+        return unit_value * row["VL_CONTA"]

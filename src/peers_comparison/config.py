@@ -50,9 +50,9 @@ ACCOUNTS = [
     "3.02",
 ]
 
-DFP_COLUMNS = ["DT_FIM_EXERC", "DENOM_CIA", "VL_CONTA", "CD_CONTA", "DS_CONTA"]
+DFP_COLUMNS = ["DT_FIM_EXERC", "DENOM_CIA", "VL_CONTA", "CD_CONTA", "DS_CONTA", "CD_CVM", "CNPJ_CIA"]
 
-ITR_COLUMNS = ["YEAR", "QUARTER", "DT_FIM_EXERC", "DENOM_CIA", "CD_CONTA", "DS_CONTA", "VL_CONTA"]
+ITR_COLUMNS = ["YEAR", "QUARTER", "DT_FIM_EXERC", "DENOM_CIA", "CD_CONTA", "DS_CONTA", "VL_CONTA", "CD_CVM", "CNPJ_CIA"]
 
 INCOMPATIBLE_ACCOUNTS = {"accounts": ["6.01.01.04", "6.01.01.02"], "ds_account": "depreciação|depreciações"}
 
@@ -64,7 +64,7 @@ CD_CONTA_MAP_DICT = {
     "3.04.02": "Despesas Gerais e Administrativas",
     "3.04.03": "Perdas por não recuperabilidade de Ativos",
     "3.04.04": "Outras Receitas Operacionais",
-    "3.04.05": "Outras Despesas Operacionais",
+    "3.04.05": "Outras Receitas Operacionais",
     "3.05": "EBIT",
     "3.01": "Receita de Venda de Bens/Serviços",
     "3.02": "Custo de Bens/Serviços",

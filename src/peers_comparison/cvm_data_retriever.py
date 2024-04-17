@@ -17,14 +17,14 @@ class CVMDataRetriever:
         self.clean_data = clean_data
         self.url = None
 
-    def get_content(self, year_filter: List):
+    def get_content(self, files_filter: List):
         response = requests.get(url=self.url)
 
         html = BeautifulSoup(response.text, "html.parser")
 
-        self.files_list = [x.get("href") for x in html.find("pre").find_all("a") if x.get("href")[-8:] in year_filter]
+        self.files_list = [x.get("href") for x in html.find("pre").find_all("a") if x.get("href")[-8:] in files_filter]
 
-    def get_year_filter(self, first_year: int, last_year: int) -> List:
+    def files_filter(self, first_year: int, last_year: int) -> List:
         if first_year and last_year:
             year_range = [x for x in range(first_year, last_year + 1)]
         elif first_year:
@@ -41,9 +41,9 @@ class CVMDataRetriever:
         # valida se os type_docs estão de acordo com os existentes.
         # caso haja algum que não esteja na lista, gerar um erro
 
-        year_filter = self.get_year_filter(first_year, last_year)
+        files_filter = self.files_filter(first_year, last_year)
 
-        self.get_content(year_filter=year_filter)
+        self.get_content(files_filter=files_filter)
 
         self.data = self.download_read_zip_file(companies_cvm_codes=companies_cvm_codes, type_docs=type_docs)
 
@@ -51,6 +51,7 @@ class CVMDataRetriever:
 
     def download_read_zip_file(self, companies_cvm_codes: List, type_docs: List) -> pd.DataFrame:
         full_links = [f"{self.url}{file_}" for file_ in self.files_list]
+        files_filter = [f"{doc.lower()}_{format}" for doc in type_docs for format in self.type_format]
 
         complete_df = pd.DataFrame()
 
@@ -58,7 +59,9 @@ class CVMDataRetriever:
             tmp_file = requests.get(link, stream=True)
             unzipped = zipfile.ZipFile(io.BytesIO(tmp_file.content))
 
-            filtered_files = [file_ for file_ in unzipped.namelist() for file_type in type_docs if file_type in file_]
+            filtered_files = [
+                file_ for file_ in unzipped.namelist() for file_type in files_filter if file_type in file_.lower()
+            ]
 
             for selected_file in filtered_files:
                 unzipped.extract(selected_file, path=config.TMP_FILES_PATH)
