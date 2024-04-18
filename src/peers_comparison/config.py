@@ -64,7 +64,7 @@ CD_CONTA_MAP_DICT = {
     "3.04.02": "Despesas Gerais e Administrativas",
     "3.04.03": "Perdas por não recuperabilidade de Ativos",
     "3.04.04": "Outras Receitas Operacionais",
-    "3.04.05": "Outras Receitas Operacionais",
+    "3.04.05": "Outras Despesas Operacionais",
     "3.05": "EBIT",
     "3.01": "Receita de Venda de Bens/Serviços",
     "3.02": "Custo de Bens/Serviços",
@@ -72,14 +72,3 @@ CD_CONTA_MAP_DICT = {
 }
 
 UPDATE_COMPANY_NAME = {"RESTOQUE COMÉRCIO E CONFECÇÕES DE ROUPAS S.A.": "VESTE S.A. ESTILO"}
-
-
-# # If modifying these scopes, delete the file token.json.
-# SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-
-# # The ID and range of a sample spreadsheet.
-# SAMPLE_SPREADSHEET_ID = "1djT2FhY4ND2TN4iTOvv2Dkx48LKSWi-NM8eu9m6nxfA"
-# SAMPLE_RANGE_NAME = "Sheet1!A1:N5"
-
-
-# URL_teste = ["https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/", "/DADOS/"]
